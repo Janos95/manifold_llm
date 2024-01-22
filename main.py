@@ -181,6 +181,7 @@ def format_code_with_parameters(code, int_map, float_map):
     value = param['value']
     code = code.replace(f'{name} = {{}}', f'{name} = {value}')
 
+  print(code)
   return code
 
 def extract_code_snippet(text):
@@ -234,8 +235,8 @@ def generated_function():
   # make cube, second argument indicates that the cube is centered
   box = Manifold.cube([box_size_x, box_size_y, box_size_z], True)
   # hollow out the box by subtracting a scaled box
-  offset = box_size_x / 2 - box_size_z / 2
-  bracket = box + box.rotate([0, 90, 0]).translate([offset, 0, offset])
+  offset = box_size_x / 2 - box_size_z / 2 # - is boolean subtract
+  bracket = box + box.rotate([0, 90, 0]).translate([offset, 0, offset]) # + is boolean union
   return bracket
 
 Here are some other examples of the manifold api
@@ -244,8 +245,9 @@ cylinder = Manifold.cylinder(cylinder_height, lower_radius, upper_radius, 20)
 sphere = Manifold.sphere(radius, 20)
 center_piece = Manifold.cylinder(thickness, radius, radius, 20)
 #makes a cube with provided dimensions that is centered
-teeth = Manifold.cube(np.array([teeth_height, teeth_width, thickness]), True).translate([radius, 0, thickness/2])
+teeth = Manifold.cube([teeth_height, teeth_width, thickness], True).translate([radius, 0, thickness/2])
 ONLY use apis that are in one of the examples above. Don't use any other apis.
+A sphere-cube is a boolean union of a cube and a smaller sphere located at one of the cubes vertices.
 The provided python code must be fully working without modification. Only provide the function nothing else.
 '''
 
@@ -287,7 +289,6 @@ def callback():
     )
 
     generated_text = extract_code_snippet(completion.choices[0].message.content)
-    print("generated text: ", generated_text)
     # generate workflow
     int_parameter_map, float_parameter_map = get_parameter_maps(generated_text)
     #print(int_parameter_map)
